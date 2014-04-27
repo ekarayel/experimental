@@ -1,9 +1,5 @@
 import qualified DyadicMap as DM
 
-import Control.Monad
-import Data.Array.IArray
-import Data.List
-import Data.Maybe
 import Data.Serialize
 import Data.Word
 import qualified Data.ByteString as BS
@@ -15,6 +11,7 @@ fromMap :: (Serialize a) => (a -> b) -> DP a b
 fromMap f = fromMap' (f . fromRight . decode . BS.pack)
    where
      fromRight (Right x) = x
+     fromRight _ = error "decoded illegal value"
      fromMap' :: ([Word8] -> b) -> DP a b
      fromMap' f' = DP (f' []) $ DM.create (\i -> fromMap' (f' . (i:)))
 
@@ -25,14 +22,17 @@ eval dp x = eval' dp (BS.unpack $ encode x)
      eval' (DP _ a) (b:bs) = eval' (DM.lookup b a) bs
 
 
-dp = fromMap f
-f' x = eval dp x
+dpfib :: DP Integer Integer
+dpfib = fromMap fib
 
-f :: Integer -> Integer
-f x
+fib' :: Integer -> Integer
+fib' x = eval dpfib x
+
+fib :: Integer -> Integer
+fib x
   | x == 0 = 1
   | x == 1 = 2
-  | otherwise = f' (x-1) + f' (x-2)
+  | otherwise = fib' (x-1) + fib' (x-2)
 
 main :: IO ()
-main = putStrLn $ show $ f 180
+main = putStrLn $ show $ fib 180
