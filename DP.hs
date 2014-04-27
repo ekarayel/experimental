@@ -1,11 +1,12 @@
+import qualified DyadicMap as DM
+
+import Control.Monad
+import Data.Array.IArray
 import Data.List
 import Data.Maybe
-import Control.Monad
 import Data.Serialize
-import qualified DyadicMap as DM
-import qualified Data.ByteString as BS
-import Data.Array.IArray
 import Data.Word
+import qualified Data.ByteString as BS
 
 -- Const Tree of height 8
 data DP a b = DP b (DM.Map8 (DP a b))
